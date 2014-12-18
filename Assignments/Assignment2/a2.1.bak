@@ -1,0 +1,90 @@
+#lang racket
+(require C311/pmatch) ;; <-- important
+(require C311/trace)
+
+(define rember*
+  (λ (a ls)
+    (cond 
+      ((null? ls) '())
+      ((pair? (car ls)) (cons (rember* a (car ls)) (rember* a (cdr ls))))
+      ((eqv? (car ls) a) (rember* a (cdr ls)))
+      (else (cons (car ls) (rember* a (cdr ls))))
+      )))
+
+(rember* 'a '())
+(rember* 'a '(a b c))
+(rember* 'a '(1 b c))
+(rember* 'a '((((b) a) c b v) a))
+
+
+;; This is a general sort of programming technique
+(define all-boolean?
+  (λ (ls)
+    (cond
+      ((null? ls) #t)
+      ((pair? (car ls)) (and (all-boolean? (car ls)) (all-boolean? (cdr ls))))
+      ((boolean? (car ls)) (all-boolean? (cdr ls)))
+      (else #f)
+      )))
+
+(all-boolean? '())
+(all-boolean? '(#t))
+(all-boolean? '(a))
+(all-boolean? '(#t ('tt)))
+(all-boolean? '(#f (#t (a a a a))))
+(all-boolean? '(#f (#t (((((#t) #f) #f) #f)))))
+(all-boolean? '(#f (#t (((((#t) #f) #f) #f)) a)))
+
+
+;;plus in slow-mo
+(define plus 
+  (λ (n1 n2)
+    (cond
+      ((zero? n2) n1)
+      (else (add1 (plus n1 (sub1 n2))))
+      )))
+
+(plus '11 '2)
+(plus 12 0)
+(plus 0 2)
+
+(define mult
+  (lambda (n1 n2)
+    (cond
+      ((zero? n2) 0)
+      (else (+ n1 (mult n1 (sub1 n2)))))))
+
+(define exp
+  (lambda (n1 n2)
+    (cond
+      ((zero? n2) 1)
+      (else (* n1 (exp n1 (sub1 n2)))))))
+
+(define tetration
+  (lambda (n1 n2)
+    (cond
+      ((zero? n2) 1)
+      (else (exp n1 (tetration n1 (sub1 n2)))))))
+
+(define pentation
+  (lambda (n1 n2)
+    (cond
+      ((zero? n2) 1)
+      (else (tetration n1 (pentation n1 (sub1 n2)))))))
+
+
+
+(trace-define copy-term1
+  (lambda (e)
+    (pmatch e ;; its a pattern matcher
+      (`,y (guard (symbol? y)) y)
+      (`(lambda (,x) ,body)
+       `(lambda (,x) ,(copy-term1 body)))
+      (`(,rator ,rand)
+       `(,(copy-term1 rator)
+         ,(copy-term1 rand))))))
+
+(copy-term1 '(x y))
+(copy-term1 '(λ((x z)(y x))))
+;;((copy-term1 '(λ((x z))))
+;;

@@ -1,0 +1,85 @@
+-------------------------------------------------------------------
+Username: mgokhale
+Assignment: a1
+-------------------------------------------------------------------
+Grader: ed
+Grade: S-
+-------------------------------------------------------------------
+Scale:
+S+	Outstanding work with almost no defects. For honors students,
+	all problems including brainteasers must be attempted.
+S	Good work, though possibly with a few errors. All
+	mandatory problems must be seriously attempted.
+S-	Below average, with frequent mistakes. Some problems may not be
+	attempted.
+U	Unacceptable, with errors throughout. Code which does not
+	compile in Racket without error or warning receives a U.
+N	Not turned in, or turned in after the due date
+-------------------------------------------------------------------
+Comments:
+
+Overall:
+
+* Please use the keyword 'lambda', rather than the unicode
+character λ, in homework for this course.
+
+* Please don't linebreak between closing parens.
+
+* Please space your S-expressions properly.
+I.e. space between elements, no space (except for line-breaks/indents)
+after the opening paren or before the closing paren.
+
+* Try to give more meaningful names to your variables. Look at
+the variable names in example code in the assignments for ideas.
+
+P1: Your solution is incorrect, as it requires making the recursive
+call with bad data (a negative number).
+
+P2: (cond) can have more than two cases, no need to nest cases in
+else branches.
+
+P6: No need to check for bad input. I.e. for zip, you should assume
+that if one list is empty, then the other is.
+
+P11: You forgot to recur on the cdr of the input in the case where
+the car of the input is a pair.
+
+P13: Not quite. You are missing a . between (z . ()) and (), and
+missing a closing paren.
+
+P17: Overall, no need to check input before the call to foldr.
+filter-fr: Don't use append where you should use cons.
+append-fr: For style consistency: use (lambda (x l) (cons x l)) rather
+than an un-eta-expanded cons in your call to foldr.
+binary->natural-fr: You didn't check for the 1 case.
+
+-------------------------------------------------------------------
+--------------------
+A1: > member- > member-?* 6
+member-?* 6
+FAILURE
+name:       check
+location:   autograde-lib/autograde.rkt:488:12
+params:     #<procedure:equal?>
+#f
+#t
+
+expected:   #t
+
+tested:     (member-?* (quote ((a b) ?)))
+Check failure
+--------------------
+--------------------
+A1: > quine > quine undefined
+quine undefined
+FAILURE
+name:       check-not-exn
+location:   autograde-lib/autograde.rkt:467:16
+params:     #<procedure:temp1201>
+
+message:    "Exception raised"
+ssage: "quine: undefined;\n cannot reference an identifier before its definition\n  in module: 'a1"
+exception:  #(struct:exn:fail:contract:variable "quine: undefined;\n cannot reference an identifier before its definition\n  in module: 'a1" #<continuation-mark-set> quine)
+Check failure
+--------------------
+131 success(es) 2 failure(s) 0 error(s) 133 test(s) run

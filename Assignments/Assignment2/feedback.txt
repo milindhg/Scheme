@@ -1,0 +1,90 @@
+-------------------------------------------------------------------
+Username: mgokhale
+Assignment: a2
+-------------------------------------------------------------------
+Grader: ed
+Grade: S-
+-------------------------------------------------------------------
+Scale:
+S+	Outstanding work with almost no defects. For honors students,
+	all problems including brainteasers must be attempted.
+S	Good work, though possibly with a few errors. All
+	mandatory problems must be seriously attempted.
+S-	Below average, with frequent mistakes. Some problems may not be
+	attempted.
+U	Unacceptable, with errors throughout. Code which does not
+	compile in Racket without error or warning receives a U.
+N	Not turned in, or turned in after the due date
+-------------------------------------------------------------------
+Comments:
+
+Overall (style, no penalty this time):
+  - Please space your S-expressions properly
+  - Please indent properly.
+  - Please don't check for equality on booleans. The cond case will
+    fire if the output of your expression is true. the procedure
+    "not" will return #f if its input is #t, and vice versa
+  
+7.  What is the purpose of checking whether the formal parameter is
+    equal to the body in the lambda case?
+11. You should only add x to the list in the lambda case if it occurs free.
+13. Unattempted
+
+-------------------------------------------------------------------
+--------------------
+a2 > unique-bound-vars 6
+unique-bound-vars 6
+FAILURE
+name:       check
+location:   autograde-lib/autograde.rkt:488:12
+params:     #<procedure:equal?>
+'()
+'(y)
+
+expected:   '(y)
+
+tested:     (unique-bound-vars (quote ((lambda (x) (lambda (y) y)) (lambda (w) (x y)))))
+Check failure
+--------------------
+--------------------
+a2 > unique-bound-vars 11
+unique-bound-vars 11
+FAILURE
+name:       check
+location:   autograde-lib/autograde.rkt:488:12
+params:     #<procedure:equal?>
+'(x x)
+'(x)
+
+expected:   '(x)
+
+tested:     (unique-bound-vars (quote (lambda (x) (lambda (x) x))))
+Check failure
+--------------------
+--------------------
+a2 > unify undefined
+unify undefined
+FAILURE
+name:       check-not-exn
+location:   autograde-lib/autograde.rkt:467:16
+params:     #<procedure:temp817>
+
+message:    "Exception raised"
+ssage: "unify: undefined;\n cannot reference an identifier before its definition\n  in module: 'a2"
+exception:  #(struct:exn:fail:contract:variable "unify: undefined;\n cannot reference an identifier before its definition\n  in module: 'a2" #<continuation-mark-set> unify)
+Check failure
+--------------------
+--------------------
+a2 > var-occurs-both? undefined
+var-occurs-both? undefined
+FAILURE
+name:       check-not-exn
+location:   autograde-lib/autograde.rkt:467:16
+params:     #<procedure:temp947>
+
+message:    "Exception raised"
+ssage: "var-occurs-both?: undefined;\n cannot reference an identifier before its definition\n  in module: 'a2"
+exception:  #(struct:exn:fail:contract:variable "var-occurs-both?: undefined;\n cannot reference an identifier before its definition\n  in module: 'a2" #<continuation-mark-set> var-occurs-both?)
+Check failure
+--------------------
+89 success(es) 4 failure(s) 0 error(s) 93 test(s) run

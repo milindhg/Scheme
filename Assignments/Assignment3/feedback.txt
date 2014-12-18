@@ -1,0 +1,63 @@
+-------------------------------------------------------------------
+Username: mgokhale
+Assignment: a3
+-------------------------------------------------------------------
+Grader: ed
+Grade: S
+-------------------------------------------------------------------
+Scale:
+S+	Outstanding work with almost no defects. For honors students,
+	all problems including brainteasers must be attempted.
+S	Good work, though possibly with a few errors. All
+	mandatory problems must be seriously attempted.
+S-	Below average, with frequent mistakes. Some problems may not be
+	attempted.
+U	Unacceptable, with errors throughout. Code which does not
+	compile in Racket without error or warning receives a U.
+N	Not turned in, or turned in after the due date
+-------------------------------------------------------------------
+Comments:
+
+- You need to box values bound by lambda in the environment, not
+  just things bound by let.
+
+-------------------------------------------------------------------
+--------------------
+A3 > set! > value-of 4
+value-of 4
+FAILURE
+name:       check
+location:   autograde-lib/autograde.rkt:488:12
+params:     #<procedure:equal?>
+3
+4
+
+expected:   4
+
+tested:     (value-of (quote (let ((a 3)) (begin2 (begin2 a (set! a 4)) a))) (lambda (y) (error (quote value-of) "unbound variable ~s" y)))
+Check failure
+--------------------
+--------------------
+A3 > value-of-lex > value-of-lex undefined
+value-of-lex undefined
+FAILURE
+name:       check-not-exn
+location:   autograde-lib/autograde.rkt:467:16
+params:     #<procedure:temp512>
+
+message:    "Exception raised"
+ssage: "identifier-binding: contract violation\n  expected: identifier?\n  given: #<syntax:56:0 \"value-of-lex\">"
+exception:  #(struct:exn:fail:contract "identifier-binding: contract violation\n  expected: identifier?\n  given: #<syntax:56:0 \"value-of-lex\">" #<continuation-mark-set>)
+Check failure
+--------------------
+--------------------
+A3 > church numerals > csub1 undefined
+csub1 undefined
+FAILURE
+name:       check-not-exn
+location:   autograde-lib/autograde.rkt:467:16
+params:     #<procedure:temp544>
+
+Check failure
+--------------------
+54 success(es) 3 failure(s) 0 error(s) 57 test(s) run

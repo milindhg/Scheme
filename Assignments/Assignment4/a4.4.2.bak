@@ -1,0 +1,69 @@
+#lang racket
+(require C311/pmatch)
+
+
+(define value-of-ri
+  (lambda (empty-env extend-env apply-env closure apply-closure)
+  (lambda (exp)
+    (letrec ([interpreter (lambda (myexp)  
+                   (pmatch myexp
+                           (`,n (guard (symbol? n)) n)
+                           (`((lambda (,x) ,body) ,appl) 'ok)
+                           )
+                   )])
+    (interpreter exp)))))
+
+
+(define empty-env-fn
+ (lambda ()
+  (lambda (y)
+   (error 'value-of "unbound variable ~s" y))))
+
+(define extend-env-fn
+ (lambda (x a env)
+  (lambda (y)
+   (if (eqv? x y) a (apply-env-fn env y)))))
+
+(define apply-env-fn
+ (lambda (env y)
+  (env y)))
+
+
+(define empty-env-ds
+ (lambda ()
+  (list 'empty-env)))
+
+(define extend-env-ds
+ (lambda (x a env)
+  (list 'extend-env-ds x a env)))
+
+(define apply-env-ds
+ (lambda (env y)
+  (pmatch env
+   (`(empty-env-ds) (error 'error))
+   (`(extend-env-ds ,x ,a ,env) (if (eqv? y x) a (apply-env-ds env y))))))
+
+
+(define closure-ds-ri
+ (lambda (x body env)
+   (list 'closure-ds-ri x body env)))
+
+(define apply-closure-ds-ri
+ (lambda (p a)
+  ;(pmatch p
+   ;(`(closure-ds-ri ,x ,body, env) (value-of-scopes body (extend-env x a env)))
+   'apply-closure-ds-ri))
+
+
+(define closure-fn-ri
+ (lambda (x body env)
+   (lambda (a)
+    'closure-fn-ri)))
+
+(define apply-closure-fn-ri
+ (lambda (p a)
+  (p a)))
+
+
+((value-of-ri empty-env-fn extend-env-fn apply-env-fn closure-fn-ri apply-closure-fn-ri) '((lambda (x) x) 5))
+;((myfunc 6 7 8 9)9)

@@ -1,0 +1,35 @@
+#lang racket
+(require C311/pmatch) ;; <-- important
+(require C311/trace)
+
+(trace-define union
+              (λ (ls1 ls2)
+                (cond
+                  ((null? ls2) ls1)
+                  ((null? ls1) ls2)
+                  ((eqv? #f (memv (car ls2) ls1)) (cons (car ls2) (union ls1 (cdr ls2))) ) 
+                  (else (union ls1 (cdr ls2)))
+                  )))
+
+
+(trace-define vars
+  (λ (e)
+    (pmatch e
+            (`,x (guard (symbol? x)) x )
+            (`(lambda (,x) ,x) `(,(vars x)))
+            ;;(`(lambda (,x) ,body) (append `(,body ,x) `(,x)))            
+            (`(,rator ,rand) (cond 
+                               ((not (and (symbol? rator) (symbol? rand ) )) `(,(union (list (vars rator)) (list (vars rand)))))
+                               (else `(,(vars rator) ,(vars rand)))
+                               ) 
+            ))))
+
+;;(vars 'x)
+;;(x)
+;;(vars '(lambda (x) x))
+;;(x)
+(vars '((lambda (y) (x x)) (x y)))
+;;(x x x y)
+;;(vars '(lambda (z) ((lambda (y) (a z)) (h (lambda (x) (h a))))))
+;;(a z h h a)
+
