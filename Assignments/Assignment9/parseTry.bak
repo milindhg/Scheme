@@ -1,3 +1,0 @@
-#lang racket
-(require "parse.rkt")
-(parse '((lambda (a b c) (* a c)) 5 6 7))

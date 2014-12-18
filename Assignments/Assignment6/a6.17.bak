@@ -1,9 +1,0 @@
-#lang racket
-
-
-(define why
-  (lambda (f)
-    ((lambda (g)
-       (f (lambda (x) ((g g) x))))
-     (lambda (g)
-       (f (lambda (x) ((g g) x)))))))

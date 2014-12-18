@@ -1,6 +1,0 @@
-#lang racket
-
-(load "pc2c.rkt")
-(pc2c "a9.10.rkt" "a9.10.c" "a9.19.h")
-
-
