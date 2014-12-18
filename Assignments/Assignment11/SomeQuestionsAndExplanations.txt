@@ -1,0 +1,24 @@
+1. > (run* (q)
+    (!- '() '(lambda (f)
+               (lambda (x)
+                 ((f x) x)))
+         q))
+(((_.0 -> (_.0 -> _.1)) -> (_.0 -> _.1)))
+
+2. > (run 1 (q)
+    (fresh (t)
+      (!- '() '(lambda (f) (f f)) t)))
+()
+
+
+
+For testcase 2 above, The Occurrence check in miniKanren allows us to detect the infinite loops/ self applications/ Y combinators
+
+FOr implementing NOT, is the last part of recursing on e1 for its type is really required? Because whatever the type of the e1 or input expression for not, the answer is always going to be #t or #f i.e. always a Bool.
+
+Example: 
+> (run* (q) (!- '() '(not (+ 1 2)) q))
+;(Bool)
+
+Why is fix called so? if its basically a combinator?
+

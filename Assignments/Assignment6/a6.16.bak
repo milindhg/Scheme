@@ -1,0 +1,7 @@
+#lang racket
+
+
+(define use-of-strange
+  (let ([strange^ (((strange 5) 6) 7)])
+    (((strange^ 8) 9) 10)))
+

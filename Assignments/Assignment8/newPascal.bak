@@ -1,0 +1,17 @@
+#lang racket
+(require C311/pmatch)
+(require C311/trace)
+
+(define empty-k-reg
+ (lambda ()
+  (list 'empty-k-reg)))
+
+(define apply-k-reg
+ (lambda (k v)
+  (pmatch k
+   [`(empty-k-reg) v]
+   [`(inner-k-reg-pascal ,a^ ,k^) (apply-k-reg k^ (cons a^ v))]
+   [`(outer-k-reg-pascal ,m^ ,a^ ,k^) (v (add1 m^) a^ (inner-k-reg-pascal a^ k^))]
+   [`(inner-k-reg-single-pascal ,k^) (v 1 0 k^)])))
+
+

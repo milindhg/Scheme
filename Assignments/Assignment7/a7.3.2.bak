@@ -1,0 +1,132 @@
+#lang racket
+(require C311/pmatch)
+(require C311/trace)
+
+
+
+;;------------------------------------------------------------------------------------------------------------------------
+(define value-of-cps-fn
+  (lambda (expr env k)
+    (pmatch expr
+      [`,n (guard (or (number? n) (boolean? n))) (apply-k-fn k n)]
+      [`(+ ,x1 ,x2) (value-of-cps-fn x1 env (lambda (x1^) (value-of-cps-fn x2 env (lambda (x2^) (apply-k-fn k (+ x1^ x2^))))))]
+      [`(* ,x1 ,x2) (value-of-cps-fn x1 env (lambda (x1^) (value-of-cps-fn x2 env (lambda (x2^) (apply-k-fn k (* x1^ x2^))))))]
+      [`(sub1 ,x) (value-of-cps-fn x env (lambda (x^) (apply-k-fn k (sub1 x^))))]
+      [`(zero? ,x) (value-of-cps-fn x env (lambda (x^) (apply-k-fn k (zero? x^))))]
+      [`(if ,test ,conseq ,alt) (value-of-cps-fn test env (lambda (test^) (if test^
+                                                                           (value-of-cps-fn conseq env k)
+                                                                           (value-of-cps-fn alt env k))))]
+      [`(capture ,k-id ,body) (value-of-cps-fn body (extend-env k-id k env) k)]
+      [`(return ,v-exp ,k-exp) (value-of-cps-fn k-exp env (lambda (k-exp^) (value-of-cps-fn v-exp env k-exp^)))]
+      [`,x (guard (symbol? x)) (apply-env env x k)]
+      [`(lambda (,id) ,body) (apply-k-fn k (closure id body env))]
+      [`(,rator ,rand) (value-of-cps-fn rator env (outer-k-fn rand env k))])))
+
+
+(define apply-env-cps-fn
+ (lambda (env y k)
+  (pmatch env
+   (`(empty-env) (error 'error))
+   (`(extend-env ,x ,a ,env) (if (eqv? y x) (apply-k-fn k a) (apply-env-cps-fn env y k))))))
+
+(define apply-closure-cps-fn
+ (lambda (p a k)
+  (pmatch p
+   (`(closure ,x ,body, env) (value-of-cps-fn body (extend-env x a env) k)))))
+
+(define empty-k-fn
+  (lambda ()
+    (lambda (v)
+      v)))
+    
+(define apply-k-fn
+  (lambda (k v)
+    (k v)))
+
+(define inner-k-fn
+  (lambda (closure k)
+    (lambda (arg)
+      (apply-closure-cps-fn closure arg k))))
+
+(define outer-k-fn
+  (lambda (rand env k)
+    (lambda (closure)
+     (value-of-cps-fn rand env (inner-k-fn closure k)))))
+  
+(value-of-cps-fn fact-5 (empty-env) (empty-k-fn))
+;120
+(value-of-cps-fn capture-fun (empty-env) (empty-k-fn))
+;12
+
+
+
+(value-of-cps-fn
+    '((lambda (x) (if (zero? x) 
+                      12 
+                      47)) 
+       0) 
+    (empty-env) (empty-k-fn))
+;12    
+
+
+;;-----------------------------------------------------------------------------------------------------------------
+
+(trace-define value-of-cps-ds
+  (lambda (expr env k)
+    (pmatch expr
+      [`,n (guard (or (number? n) (boolean? n))) (apply-k-ds k n)]
+      [`(+ ,x1 ,x2) (value-of-cps-ds x1 env (lambda (x1^) (value-of-cps-ds x2 env (lambda (x2^) (apply-k-ds k (+ x1^ x2^))))))]
+      [`(* ,x1 ,x2) (value-of-cps-ds x1 env (lambda (x1^) (value-of-cps-ds x2 env (lambda (x2^) (apply-k-ds k (* x1^ x2^))))))]
+      [`(sub1 ,x) (value-of-cps-ds x env (lambda (x^) (apply-k-ds k (sub1 x^))))]
+      [`(zero? ,x) (value-of-cps-ds x env (lambda (x^) (apply-k-ds k (zero? x^))))]
+      [`(if ,test ,conseq ,alt) (value-of-cps-ds test env (lambda (test^) (if test^
+                                                                           (value-of-cps-ds conseq env k)
+                                                                           (value-of-cps-ds alt env k))))]
+      [`(capture ,k-id ,body) (value-of-cps-ds body (extend-env k-id k env) k)]
+      [`(return ,v-exp ,k-exp) (value-of-cps-ds k-exp env (lambda (k-exp^) (value-of-cps-ds v-exp env k-exp^)))]
+      [`,x (guard (symbol? x)) (apply-env env x k)]
+      [`(lambda (,id) ,body) (apply-k-ds k (closure id body env))]
+      [`(,rator ,rand) (value-of-cps-ds rator env (outer-k-ds rand env k))])))
+
+(define apply-closure-cps-ds
+ (lambda (p a k)
+  (pmatch p
+   (`(closure ,x ,body, env) (value-of-cps-ds body (extend-env x a env) k)))))
+
+(define apply-k-ds
+  (lambda (k v)
+    (pmatch k
+            [`(empty-k-ds) v]
+            [`(inner-k-ds ,closure ,k^) (apply-closure-cps-ds closure v k^)]
+            [`(outer-k-ds ,rand ,env ,k^) (value-of-cps-ds rand env (inner-k-ds v k^))]
+            [else (k v)])))
+
+(define empty-k-ds
+  (lambda ()
+      (list 'empty-k-ds)))
+
+(define inner-k-ds
+  (lambda (closure k^)
+      (list 'inner-k-ds closure k^)))
+
+(define outer-k-ds
+  (lambda (rand env k^)
+    (list 'outer-k-ds rand env k^)))
+
+
+
+(value-of-cps-ds fact-5 (empty-env) (empty-k-ds))
+;120
+(value-of-cps-ds capture-fun (empty-env) (empty-k-ds))
+;12
+
+
+
+(value-of-cps-ds
+    '((lambda (x) (if (zero? x) 
+                      12 
+                      47)) 
+       0) 
+    (empty-env) (empty-k-ds))
+;12    
+

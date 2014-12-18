@@ -1,0 +1,39 @@
+>(value-of-driver
+  '(exp
+    let
+    (exp
+     lambda
+     (exp
+      lambda
+      (exp
+       if
+       (exp zero (exp var 0))
+       (exp const 1)
+       (exp
+        mult
+        (exp var 0)
+        (exp app (exp app (exp var 1) (exp var 1)) (exp sub1 (exp var 0)))))))
+    (exp app (exp app (exp var 0) (exp var 0)) (exp const 5))))
+
+k=(cont empty) expr=(exp let (exp lambda (exp lambda (exp if (exp zero (exp var 0)) (exp const 1) (exp mult (exp var 0) (exp app (exp app (exp var 1) (exp var 1)) (exp sub1 (exp var 0))))))) (exp app (exp app (exp var 0) (exp var 0)) (exp const 5))) v=24 c=hukarz a=hukarz env=(envr empty) num=0
+>(value-of-cps)
+
+k=(cont empty) expr=(exp let (exp lambda (exp lambda (exp if (exp zero (exp var 0)) (exp const 1) (exp mult (exp var 0) (exp app (exp app (exp var 1) (exp var 1)) (exp sub1 (exp var 0))))))) (exp app (exp app (exp var 0) (exp var 0)) (exp const 5))) v=24 c=hukarz a=hukarz env=(envr empty) num=0
+>(value-of-cps)
+
+k=(cont inner_let (exp app (exp app (exp var 0) (exp var 0)) (exp const 5)) (envr empty) (cont empty)) expr=(exp lambda (exp lambda (exp if (exp zero (exp var 0)) (exp const 1) (exp mult (exp var 0) (exp app (exp app (exp var 1) (exp var 1)) (exp sub1 (exp var 0))))))) v=24 c=hukarz a=hukarz env=(envr empty) num=0
+>(apply-continuation)
+
+k=(cont inner_let (exp app (exp app (exp var 0) (exp var 0)) (exp const 5)) (envr empty) (cont empty)) expr=(exp lambda (exp lambda (exp if (exp zero (exp var 0)) (exp const 1) (exp mult (exp var 0) (exp app (exp app (exp var 1) (exp var 1)) (exp sub1 (exp var 0))))))) v=(clos closure (exp lambda (exp if (exp zero (exp var 0)) (exp const 1) (exp mult (exp var 0) (exp app (exp app (exp var 1) (exp var 1)) (exp sub1 (exp var 0)))))) (envr empty)) c=hukarz a=hukarz env=(envr empty) num=0
+>(value-of-cps)
+
+k=(cont empty) expr=(exp app (exp app (exp var 0) (exp var 0)) (exp const 5)) v=(clos closure (exp lambda (exp if (exp zero (exp var 0)) (exp const 1) (exp mult (exp var 0) (exp app (exp app (exp var 1) (exp var 1)) (exp sub1 (exp var 0)))))) (envr empty)) c=hukarz a=hukarz env=(envr empty) num=0
+>(value-of-cps)
+
+k=(cont outer_rator_rand (exp const 5) (envr empty) (cont empty)) expr=(exp app (exp var 0) (exp var 0)) v=(clos closure (exp lambda (exp if (exp zero (exp var 0)) (exp const 1) (exp mult (exp var 0) (exp app (exp app (exp var 1) (exp var 1)) (exp sub1 (exp var 0)))))) (envr empty)) c=hukarz a=hukarz env=(envr empty) num=0
+>(value-of-cps)
+
+k=(cont outer_rator_rand (exp var 0) (envr empty) (cont outer_rator_rand (exp const 5) (envr empty) (cont empty))) expr=(exp var 0) v=(clos closure (exp lambda (exp if (exp zero (exp var 0)) (exp const 1) (exp mult (exp var 0) (exp app (exp app (exp var 1) (exp var 1)) (exp sub1 (exp var 0)))))) (envr empty)) c=hukarz a=hukarz env=(envr empty) num=0
+>(apply-env)
+
+k=(cont outer_rator_rand (exp var 0) (envr empty) (cont outer_rator_rand (exp const 5) (envr empty) (cont empty))) expr=(exp var 0) v=(clos closure (exp lambda (exp if (exp zero (exp var 0)) (exp const 1) (exp mult (exp var 0) (exp app (exp app (exp var 1) (exp var 1)) (exp sub1 (exp var 0)))))) (envr empty)) c=hukarz a=hukarz env=(envr empty) num=0

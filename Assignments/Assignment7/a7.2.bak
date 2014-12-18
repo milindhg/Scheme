@@ -1,0 +1,17 @@
+#lang racket
+(require C311/trace)
+(require C311/pmatch)
+
+
+(define rember*1
+  (lambda (ls)
+    (cond
+      [(null? ls) '()]
+      [(pair? (car ls))
+       (cond
+         [(equal? (car ls) (rember*1 (car ls)))
+          (cons (car ls) (rember*1 (cdr ls)))]
+         [else (cons (rember*1 (car ls)) (cdr ls))])]
+      [(eqv? (car ls) '?) (cdr ls)]
+      [else (cons (car ls) (rember*1 (cdr ls)))])))
+

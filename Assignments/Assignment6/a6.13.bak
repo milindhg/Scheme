@@ -1,0 +1,9 @@
+#lang racket
+
+
+(define M
+  (lambda (f)
+    (lambda (ls)
+      (cond
+        ((null? ls) '())
+        (else (cons (f (car ls)) ((M f) (cdr ls))))))))

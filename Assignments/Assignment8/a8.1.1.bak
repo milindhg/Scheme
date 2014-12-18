@@ -1,0 +1,32 @@
+#lang racket
+(require C311/pmatch)
+
+(define trampoline
+  (lambda (th)
+    (trampoline (th))))
+
+
+(define ack
+  (lambda (m n k)
+    (cond
+      [(zero? m) (apply-k k (add1 n))]
+      [(zero? n) (ack (sub1 m) 1 k)]
+      [else (ack m (sub1 n) (inner-k m k))])))
+
+(define empty-k
+  (lambda ()
+    (list 'empty-k)))
+
+(define inner-k
+  (lambda (m k)
+    (list 'inner-k m k)))
+
+
+
+(define apply-k
+  (lambda (k v)
+      (pmatch k
+              [`(empty-k) v]
+              [`(inner-k ,m^ ,k^) (ack (sub1 m^) v k^)])))
+
+(ack 2 2 (empty-k))

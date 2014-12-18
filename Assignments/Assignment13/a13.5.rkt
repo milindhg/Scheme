@@ -1,0 +1,121 @@
+#lang racket
+(require C311/numbers)
+(require C311/mk)
+(require C311/let-pair)
+(provide (all-defined-out))
+
+
+(define caro
+  (lambda (p a)
+    (fresh (d)
+      (== (cons a d) p))))
+
+(define cdro
+  (lambda (p d)
+    (fresh (a)
+      (== (cons a d) p))))
+
+
+(define membero
+  (lambda (x l)
+    (conde
+      ((== l '()))
+      ((caro l x))
+        ((fresh (d)
+          (cdro l d)
+          (membero x d))))))
+
+(define middle-earth
+    '((lindon eriador forodwaith)
+      (forodwaith lindon rhovanion eriador)
+      (eriador lindon forodwaith rhovanion enedwaith)
+      (rhovanion forodwaith eriador enedwaith rohan rhun)
+      (enedwaith eriador rhovanion rohan gondor)
+      (rohan enedwaith rhovanion rhun gondor mordor)
+      (gondor enedwaith rohan mordor)
+      (rhun rohan rhovanion khand mordor)
+      (mordor gondor rohan rhun khand harad)
+      (khand mordor rhun harad)
+      (harad mordor khand)))
+
+
+(define color-middle-earth
+  (lambda (lst)
+    (run 1 (q) (four-CE lst q))))
+
+
+;(define four-CE
+;  (lambda (ls q)
+;    (fresh (col1 col2 col3 col4 col5 col6 col7 col8 col9 col0 col10)
+;       (== q `((lindon . ,col0) (forodwaith . ,col1)
+;                  (eriador . ,col2) (rhovanion . ,col3) (enedwaith . ,col4)
+;                  (rohan . ,col5) (gondor . ,col6) (rhun . ,col7)
+;                  (mordor . ,col8) ( khand . ,col9) (harad . ,col10)))
+;        (=/= col0 col1)
+;		(=/= col0 col2)
+;        (=/= col1 col2)
+;		(=/= col1 col3)
+;        (=/= col2 col3)
+;		(=/= col2 col4)
+;        (=/= col3 col4)
+;		(=/= col3 col5)
+;        (=/= col3 col7)
+;		(=/= col4 col5)
+;        (=/= col4 col6)
+;		(=/= col5 col7)
+;        (=/= col5 col6)
+;		(=/= col5 col8)
+;        (=/= col6 col8)
+;		(=/= col7 col9)
+;        (=/= col7 col8)
+;		(=/= col8 col9)
+;        (=/= col8 col10)
+;		(=/= col9 col10)
+;        )))
+
+
+(define four-CE
+  (lambda (ls out)
+    (fresh (c1 c2 c3 c4 c5 c6 c7 c8 c9 c0 c10)
+       (== out `((lindon . ,c0) (forodwaith . ,c1)
+                  (eriador . ,c2) (rhovanion . ,c3) (enedwaith . ,c4)
+                  (rohan . ,c5) (gondor . ,c6) (rhun . ,c7)
+                  (mordor . ,c8) ( khand . ,c9) (harad . ,c10)))
+        (=/= c0 c2) 
+        (=/= c0 c1)
+        (=/= c1 c3)
+        (=/= c1 c2)
+        (=/= c2 c3)
+        (=/= c2 c4)
+        (=/= c3 c4)
+        (=/= c3 c5)
+        (=/= c3 c7)
+        (=/= c4 c5)
+        (=/= c4 c6)
+        (=/= c5 c7) 
+        (=/= c5 c6) 
+        (=/= c5 c8)
+        (=/= c6 c8)
+        (=/= c7 c9) 
+        (=/= c7 c8)
+        (=/= c8 c9)
+        (=/= c8 c10)
+        (=/= c9 c10)
+        (membero c0 ls)
+        (membero c1 ls)
+        (membero c2 ls)
+        (membero c3 ls)
+        (membero c4 ls)
+        (membero c5 ls)
+        (membero c6 ls)
+        (membero c7 ls)
+        (membero c8 ls)
+        (membero c9 ls)
+        (membero c10 ls))))
+
+(color-middle-earth '(red orange purple black))
+;(((lindon . red) (forodwaith . orange) (eriador . purple) (rhovanion . red)
+;   (enedwaith . orange) (rohan . purple) (gondor . red)
+;   (rhun . orange) (mordor . black) (khand . red)
+;   (harad . orange)))
+

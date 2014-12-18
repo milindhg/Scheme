@@ -1,0 +1,6 @@
+#lang racket
+
+(define strange
+  (lambda (x)
+    ((lambda (g) (lambda (x) (g g)))
+     (lambda (g) (lambda (x) (g g))))))

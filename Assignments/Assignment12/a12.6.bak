@@ -1,0 +1,114 @@
+#lang racket
+(require C311/let-pair)
+(provide (all-defined-out))
+(require C311/trace)
+
+(define-syntax do
+  (syntax-rules (<-)
+    ((_ bind e) e)
+    ((_ bind (v <- e) e* e** ...)
+     (bind e (lambda (v) (do bind e* e** ...))))
+    ((_ bind e e* e** ...)
+     (bind e (lambda (_) (do bind e* e** ...))))))
+
+(define return-state
+  (lambda (a)
+    (lambda (s)
+      `(,a . ,s))))
+
+(define bind-state
+  (lambda (ma f)
+    (lambda (s)
+      (let ([vs^ (ma s)])
+        (let ([v (car vs^)]
+              [s^ (cdr vs^)])
+          ((f v) s^))))))
+
+(define get-state
+  (lambda (s) `(,s . ,s)))
+
+(define put-state
+  (lambda (new-s)
+    (lambda (s)
+      `(__ . ,new-s))))
+
+(define return-cont
+  (lambda (a)
+    (lambda (k)
+      (k a))))
+
+(define bind-cont
+  (lambda (ma f)
+    (lambda (k)
+      (let ((k^ (lambda (a)
+                  (let ((mb (f a)))
+                    (mb k)))))
+        (ma k^)))))
+
+(define callcc
+  (lambda (g)
+    (lambda (k)
+      (let ((k-as-proc (lambda (a) (lambda (k^) (k a)))))
+        (let ((ma (g k-as-proc)))
+          (ma k))))))
+
+(define return-maybe
+  (lambda (a) `(Just ,a)))
+
+(define bind-maybe
+  (lambda (ma f)
+    (cond
+      [(eq? (car ma) 'Just) (f (cadr ma))]
+      [(eq? (car ma) 'Nothing) '(Nothing)])))
+
+(define fail
+  (lambda ()
+    '(Nothing)))
+
+(define return-writer
+  (lambda (a) `(,a . ())))
+
+(trace-define bind-writer
+  (lambda (ma f)
+    (let ([mb (f (car ma))])
+      `(,(car mb) . ,(append (cdr ma) (cdr mb))))))
+
+(define tell-writer
+  (lambda (msg)
+    `(__ . (,msg))))
+
+(define reciprocal
+  (lambda (n)
+    (cond
+      [(zero? n) (fail)]
+      [else (return-maybe (/ 1 n))])))
+
+(reciprocal 0)
+;(Nothing)
+ 
+(reciprocal 2)
+;(Just 1/2)
+
+(define traverse
+    (lambda (return bind f)
+      (letrec
+        ((trav
+           (lambda (tree)
+             (cond
+               [(pair? tree)
+                (do bind
+                  (a <- (trav (car tree)))
+                  (d <- (trav (cdr tree)))
+                  (return (cons a d)))]
+               [else (f tree)]))))
+        trav)))
+
+
+(define traverse-reciprocal
+    (traverse return-maybe bind-maybe reciprocal))
+ 
+(traverse-reciprocal '((1 . 2) . (3 . (4 . 5))))
+;(Just ((1 . 1/2) . (1/3 . (1/4 . 1/5))))
+ 
+(traverse-reciprocal '((1 . 2) . (0 . (4 . 5))))
+;(Nothing)
